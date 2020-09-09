@@ -437,6 +437,8 @@ fragmentShader =
 
             float a = (c.r + c.g + c.b) / 2.;
             //vec3 c = vec3(0.0, 0.0, 0.0);
+
+            // hehu
         
             gl_FragColor = vec4(c, a);
         }
