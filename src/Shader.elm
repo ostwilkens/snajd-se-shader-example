@@ -16,7 +16,9 @@ type alias Uniforms =
     , distance : Float
     , resolution : Vector2.Vec2
     , xPos : Float
+    , yPos : Float
     , targetXPos : Float
+    , targetYPos : Float
     }
 
 
@@ -48,7 +50,9 @@ fragmentShader =
         uniform float speed;
         uniform float distance;
         uniform float xPos;
+        uniform float yPos;
         uniform float targetXPos;
+        uniform float targetYPos;
         uniform vec2 resolution;
         const vec3 purple = normalize(vec3(0.298, 0.176, 0.459));
         const vec3 pink = normalize(vec3(250.0, 112.0, 154.0));
@@ -433,13 +437,26 @@ fragmentShader =
             vec3 rayDir = normalize(cameraRight * uv.x + cameraUp * uv.y + cameraDir);
 
             vec3 c = march(origin, rayDir);
-            pp(c, uv);
+            //pp(c, uv);
 
-            float a = (c.r + c.g + c.b) / 2.;
-            //vec3 c = vec3(0.0, 0.0, 0.0);
+            //c += xPos * 1.;
+            //c -= 1.;
 
-            // hehu
+            vec2 mouse = vec2(xPos, -yPos);
+            float hehu = length(vFragCoord - mouse + vec2(cos(time * 0.7), sin(time * 0.45)) * 0.1);
+            //c += step(hehu, 0.1);
+            c += (1. - pow(hehu * 1.5, 1.)) * 0.2 * pink;
+
+
+            vec2 mouseTarget = vec2(targetXPos, -targetYPos);
+            c += step(length(vFragCoord - mouseTarget), 0.01) * pink;
+
+            vec2 spot = vec2(-0.862, 0.945);
+            c += step(length(vFragCoord - spot), 0.006) * pink;
+
+
         
+            float a = clamp((c.r + c.g + c.b), 0., 1.);
             gl_FragColor = vec4(c, a);
         }
     |]

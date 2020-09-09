@@ -39,7 +39,7 @@ view : Model -> Html Msg
 view model =
     Html.div
         [ style "position" "absolute"
-        , style "pointer-events" "none"
+        -- , style "pointer-events" "none"
         , style "width" "100%"
         , style "height" "100%"
         , style "top" "0"
@@ -51,10 +51,10 @@ view model =
 glView : Model -> Html Msg
 glView model =
     WebGL.toHtml
-        [ style "height" "100%"
-        , style "width" "100%"
-        , Html.Attributes.height 2000
-        , Html.Attributes.width 1300
+        [ style "width" "100%"
+        -- , style "height" "100%"
+        , Html.Attributes.height 1000
+        , Html.Attributes.width 1000
         ]
         [ WebGL.entity vertexShader
             fragmentShader
@@ -63,7 +63,9 @@ glView model =
             , speed = model.speed
             , resolution = vec2 (Tuple.first model.resolution) (Tuple.second model.resolution)
             , xPos = model.xPos
+            , yPos = model.yPos
             , targetXPos = model.targetXPos
+            , targetYPos = model.targetYPos
             , distance = model.distance
             }
         ]
@@ -74,7 +76,9 @@ type alias Model =
     , speed : Float
     , distance : Float
     , xPos : Float
+    , yPos : Float
     , targetXPos : Float
+    , targetYPos : Float
     , resolution : ( Float, Float )
     }
 
@@ -85,7 +89,9 @@ init =
       , speed = 0
       , distance = 0
       , xPos = 0
+      , yPos = 0
       , targetXPos = 0
+      , targetYPos = 0
       , resolution = ( 1, 1 )
       }
     , Task.perform InitWindowSize Browser.Dom.getViewport
@@ -107,7 +113,8 @@ update msg model =
                 | time = model.time + delta
                 , speed = model.speed + delta * 0.05
                 , distance = model.distance + model.speed * 0.0001
-                , xPos = model.xPos * 0.9 + model.targetXPos * 0.1
+                , xPos = model.xPos * 0.98 + model.targetXPos * 0.02
+                , yPos = model.yPos * 0.98 + model.targetYPos * 0.02
               }
             , Cmd.none
             )
@@ -115,6 +122,9 @@ update msg model =
         Move ( x, y ) ->
             ( { model
                 | targetXPos = ((x / Tuple.first model.resolution) - 0.5) * 2
+                , targetYPos = ((y / Tuple.first model.resolution) - 0.5) * 2
+                -- | targetXPos = x
+                -- , targetYPos = y
               }
             , Cmd.none
             )
